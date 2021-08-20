@@ -1,1 +1,1 @@
-# Synonyms-detection
+# Synonyms detection
