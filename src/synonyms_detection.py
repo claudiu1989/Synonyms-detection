@@ -10,10 +10,19 @@ python ./synonyms_detection.py
 
 from gensim.models import Word2Vec
 
+
 def evaluate_synonyms(model, th):
+    """The main function for synonyms experiment.
+       TODO: add type hints
+
+        Args:
+            model: The word-vector model.
+            th: The cosine similarity threshold.
+
+    """
     with open('sinonime.txt', 'r', encoding='UTF-8') as data_file:
-        TP = 0
-        OVS = 0
+        TP = 0  # True positives
+        OVS = 0  # Out-of-vocabulary synonyms
         j = 0
         for line in data_file:
             j = j + 1
@@ -21,29 +30,30 @@ def evaluate_synonyms(model, th):
             try:
                 result = model.wv.similarity(left_word.strip(), right_word.strip())
                 if result >= th:
-                    TP = TP +1 
-            except:
+                    TP = TP + 1 
+            except:  # TODO: use a specific exception
                 OVS = OVS + 1
 
     with open('non_sinonime.txt', 'r', encoding='UTF-8') as data_file:
-        TN = 0
-        OVN = 0
+        TN = 0  # True negatives
+        OVN = 0  # Out-of-vocabulary non-synonyms
         i = 0
         for line in data_file:
             i = i + 1
-            if i > j: # Limit the number of non-synonyms to that of the synonyms
+            if i > j:  # Limit the number of non-synonyms to that of the synonyms
                 break
             left_word, right_word = line.split('=')
             try:
                 result = model.wv.similarity(left_word.strip(), right_word.strip())
                 if result < th:
-                    TN = TN +1 
-            except:
+                    TN = TN + 1
+            except:  # TODO: use a specific exception
                 OVN = OVN + 1
-    print(f'True positives: {TP/float(j-OVS)}')
-    print(f'Out-of-vocabulary synonyms: {OVS/float(j)}')
-    print(f'Out-of-vocabulary non-synonyms: {TN/float(i-OVN)}')
-    print(f'OVN: {OVN/float(i)}')
+    print(f'True positives rate: {TP/float(j-OVS)}')
+    print(f'Out-of-vocabulary synonyms rate: {OVS/float(j)}')
+    print(f'True negatives rate: {TN/float(i-OVN)}')
+    print(f'Out-of-vocabulary non-synonyms rate: {OVN/float(i)}')
+
 
 if __name__ == '__main__':
     # Be sure you have the models and data files in the current dir
